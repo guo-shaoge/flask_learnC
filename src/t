@@ -1,0 +1,365 @@
+main.c:1:10: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before string constant
+ uinclude "web_backfront.h"
+          ^
+main.c:6:21: error: unknown type name ‘pid_t’
+ int get_proc_status(pid_t pid, const char *id) {
+                     ^
+main.c:36:68: error: unknown type name ‘size_t’
+ void write_file(const char *fn, const char *msg, const char *mode, size_t len) {
+                                                                    ^
+main.c: In function ‘write_log’:
+main.c:56:2: error: unknown type name ‘va_list’
+  va_list ap;
+  ^
+main.c:57:11: error: ‘LONG_SQL_LEN’ undeclared (first use in this function)
+  char buf[LONG_SQL_LEN];
+           ^
+main.c:57:11: note: each undeclared identifier is reported only once for each function it appears in
+main.c:60:2: warning: incompatible implicit declaration of built-in function ‘strcat’ [enabled by default]
+  strcat((char*)buf, "\n");
+  ^
+main.c:63:15: error: ‘RE’ undeclared (first use in this function)
+  if (level == RE) {
+               ^
+main.c:64:14: error: ‘RE_OUT’ undeclared (first use in this function)
+   write_file(RE_OUT, buf, "w", sizeof(buf));
+              ^
+main.c:66:32: error: ‘errno’ undeclared (first use in this function)
+    write_file(RE_OUT, strerror(errno), "w", sizeof(buf));
+                                ^
+main.c:68:22: error: ‘INT_RE’ undeclared (first use in this function)
+  } else if (level == INT_RE) {
+                      ^
+main.c:69:14: error: ‘INT_RE_OUT’ undeclared (first use in this function)
+   write_file(INT_RE_OUT, buf, "a", sizeof(buf));
+              ^
+main.c:75:22: error: ‘CE’ undeclared (first use in this function)
+  } else if (level == CE) {
+                      ^
+main.c:76:14: error: ‘CE_OUT’ undeclared (first use in this function)
+   write_file(CE_OUT, buf, "w", sizeof(buf));
+              ^
+main.c:80:22: error: ‘LOG’ undeclared (first use in this function)
+  } else if (level == LOG) {
+                      ^
+main.c:81:14: error: ‘LOG_OUT’ undeclared (first use in this function)
+   write_file(LOG_OUT, buf, "a", sizeof(buf));
+              ^
+main.c:85:22: error: ‘APP_LOG’ undeclared (first use in this function)
+  } else if (level == APP_LOG) {
+                      ^
+main.c:86:13: error: ‘WORK_DIR_LEN’ undeclared (first use in this function)
+   char temp[WORK_DIR_LEN];
+             ^
+main.c:90:14: error: ‘APP_ROOT_DIR’ undeclared (first use in this function)
+   if (strcmp(APP_ROOT_DIR, temp) != 0) {
+              ^
+main.c:94:14: error: ‘APP_LOG_OUT’ undeclared (first use in this function)
+   write_file(APP_LOG_OUT, buf, "a", sizeof(buf));
+              ^
+main.c: At top level:
+main.c:105:42: warning: ‘struct rlimit’ declared inside parameter list [enabled by default]
+ int Setrlimit(int resource, const struct rlimit *rlim) {
+                                          ^
+main.c:105:42: warning: its scope is only this definition or declaration, which is probably not what you want [enabled by default]
+main.c: In function ‘Setrlimit’:
+main.c:109:13: error: ‘INT_RE’ undeclared (first use in this function)
+   write_log(INT_RE, 1, "setrlimit error");
+             ^
+main.c:110:3: warning: incompatible implicit declaration of built-in function ‘exit’ [enabled by default]
+   exit(-1);
+   ^
+main.c: In function ‘compile’:
+main.c:116:2: error: unknown type name ‘pid_t’
+  pid_t pid;
+  ^
+main.c:118:16: error: storage size of ‘lmt’ isn’t known
+  struct rlimit lmt;
+                ^
+main.c:122:13: error: ‘INT_RE’ undeclared (first use in this function)
+   write_log(INT_RE ,1,  "fork error when compile file");
+             ^
+main.c:127:16: error: ‘USER_ID’ undeclared (first use in this function)
+   if (setreuid(USER_ID, USER_ID) < 0) {
+                ^
+main.c:129:4: warning: incompatible implicit declaration of built-in function ‘exit’ [enabled by default]
+    exit(-1);
+    ^
+main.c:135:18: error: ‘COMPILE_CPU_LMT’ undeclared (first use in this function)
+   lmt.rlim_cur = COMPILE_CPU_LMT;
+                  ^
+main.c:137:13: error: ‘RLIMIT_CPU’ undeclared (first use in this function)
+   Setrlimit(RLIMIT_CPU, &lmt);
+             ^
+main.c:139:18: error: ‘COMPILED_FS_LMT’ undeclared (first use in this function)
+   lmt.rlim_cur = COMPILED_FS_LMT;
+                  ^
+main.c:141:13: error: ‘RLIMIT_FSIZE’ undeclared (first use in this function)
+   Setrlimit(RLIMIT_FSIZE, &lmt);
+             ^
+main.c:143:15: error: ‘CE_OUT’ undeclared (first use in this function)
+   if (freopen(CE_OUT, "w",  stdout) == NULL) {
+               ^
+main.c:143:29: error: ‘stdout’ undeclared (first use in this function)
+   if (freopen(CE_OUT, "w",  stdout) == NULL) {
+                             ^
+main.c:143:40: error: ‘NULL’ undeclared (first use in this function)
+   if (freopen(CE_OUT, "w",  stdout) == NULL) {
+                                        ^
+main.c:145:4: warning: incompatible implicit declaration of built-in function ‘printf’ [enabled by default]
+    printf("fope err");
+    ^
+main.c:147:29: error: ‘stderr’ undeclared (first use in this function)
+   if (freopen(CE_OUT, "w",  stderr) == NULL) {
+                             ^
+main.c:151:7: warning: incompatible implicit declaration of built-in function ‘execl’ [enabled by default]
+   if (execl(GCC_PATH, "gcc","-static", "-o", COMPILED_FILE, src_name , (char*)0) < 0) {
+       ^
+main.c:151:13: error: ‘GCC_PATH’ undeclared (first use in this function)
+   if (execl(GCC_PATH, "gcc","-static", "-o", COMPILED_FILE, src_name , (char*)0) < 0) {
+             ^
+main.c:151:46: error: ‘COMPILED_FILE’ undeclared (first use in this function)
+   if (execl(GCC_PATH, "gcc","-static", "-o", COMPILED_FILE, src_name , (char*)0) < 0) {
+                                              ^
+main.c:153:4: warning: incompatible implicit declaration of built-in function ‘exit’ [enabled by default]
+    exit(-1);
+    ^
+main.c: In function ‘run_solution’:
+main.c:162:16: error: storage size of ‘lmt’ isn’t known
+  struct rlimit lmt;
+                ^
+main.c:166:13: error: ‘INT_RE’ undeclared (first use in this function)
+   write_log(INT_RE, 1, "chroot error");
+             ^
+main.c:167:3: warning: incompatible implicit declaration of built-in function ‘exit’ [enabled by default]
+   exit(-1);
+   ^
+main.c:171:3: warning: incompatible implicit declaration of built-in function ‘exit’ [enabled by default]
+   exit(-1);
+   ^
+main.c:176:15: error: ‘USER_ID’ undeclared (first use in this function)
+  if (setreuid(USER_ID, USER_ID) < 0) {
+               ^
+main.c:178:3: warning: incompatible implicit declaration of built-in function ‘exit’ [enabled by default]
+   exit(-1);
+   ^
+main.c:184:9: error: ‘PTRACE_TRACEME’ undeclared (first use in this function)
+  ptrace(PTRACE_TRACEME, 0, NULL, NULL);
+         ^
+main.c:184:28: error: ‘NULL’ undeclared (first use in this function)
+  ptrace(PTRACE_TRACEME, 0, NULL, NULL);
+                            ^
+main.c:187:17: error: ‘RUN_CPU_LMT’ undeclared (first use in this function)
+  lmt.rlim_cur = RUN_CPU_LMT;
+                 ^
+main.c:189:12: error: ‘RLIMIT_CPU’ undeclared (first use in this function)
+  Setrlimit(RLIMIT_CPU, &lmt);
+            ^
+main.c:192:17: error: ‘NPROC_LMT’ undeclared (first use in this function)
+  lmt.rlim_cur = NPROC_LMT;
+                 ^
+main.c:194:12: error: ‘RLIMIT_NPROC’ undeclared (first use in this function)
+  Setrlimit(RLIMIT_NPROC, &lmt);
+            ^
+main.c:197:17: error: ‘RUN_FS_LMT’ undeclared (first use in this function)
+  lmt.rlim_cur = RUN_FS_LMT;
+                 ^
+main.c:199:12: error: ‘RLIMIT_FSIZE’ undeclared (first use in this function)
+  Setrlimit(RLIMIT_FSIZE, &lmt);
+            ^
+main.c:202:17: error: ‘RUN_FN_LMT’ undeclared (first use in this function)
+  lmt.rlim_cur = RUN_FN_LMT;
+                 ^
+main.c:204:12: error: ‘RLIMIT_NOFILE’ undeclared (first use in this function)
+  Setrlimit(RLIMIT_NOFILE, &lmt);
+            ^
+main.c:212:17: error: ‘AS_LMT’ undeclared (first use in this function)
+  lmt.rlim_cur = AS_LMT;
+                 ^
+main.c:214:12: error: ‘RLIMIT_AS’ undeclared (first use in this function)
+  Setrlimit(RLIMIT_AS, &lmt);
+            ^
+main.c:216:10: error: ‘DATA_IN’ undeclared (first use in this function)
+  freopen(DATA_IN, "r", stdin);
+          ^
+main.c:216:24: error: ‘stdin’ undeclared (first use in this function)
+  freopen(DATA_IN, "r", stdin);
+                        ^
+main.c:217:10: error: ‘DATA_OUT’ undeclared (first use in this function)
+  freopen(DATA_OUT, "w", stdout);
+          ^
+main.c:217:25: error: ‘stdout’ undeclared (first use in this function)
+  freopen(DATA_OUT, "w", stdout);
+                         ^
+main.c:218:10: error: ‘RE_OUT’ undeclared (first use in this function)
+  freopen(RE_OUT, "w", stderr);
+          ^
+main.c:218:23: error: ‘stderr’ undeclared (first use in this function)
+  freopen(RE_OUT, "w", stderr);
+                       ^
+main.c:219:6: warning: incompatible implicit declaration of built-in function ‘execl’ [enabled by default]
+  if (execl("/compiled_file", "compiled_file", (char *)0) < 0) {
+      ^
+main.c:221:3: warning: incompatible implicit declaration of built-in function ‘exit’ [enabled by default]
+   exit(-1);
+   ^
+main.c: In function ‘get_file_size’:
+main.c:226:14: error: storage size of ‘buf’ isn’t known
+  struct stat buf;
+              ^
+main.c: At top level:
+main.c:235:20: error: unknown type name ‘pid_t’
+ int watch_solution(pid_t pid, int *flag) {
+                    ^
+main.c: In function ‘make_work_dir’:
+main.c:302:2: warning: incompatible implicit declaration of built-in function ‘memset’ [enabled by default]
+  memset(work_dir, 0, WORK_DIR_LEN); 
+  ^
+main.c:302:22: error: ‘WORK_DIR_LEN’ undeclared (first use in this function)
+  memset(work_dir, 0, WORK_DIR_LEN); 
+                      ^
+main.c:304:2: warning: incompatible implicit declaration of built-in function ‘strcpy’ [enabled by default]
+  strcpy(work_dir, APP_ROOT_DIR);
+  ^
+main.c:304:19: error: ‘APP_ROOT_DIR’ undeclared (first use in this function)
+  strcpy(work_dir, APP_ROOT_DIR);
+                   ^
+main.c:305:2: warning: incompatible implicit declaration of built-in function ‘strcat’ [enabled by default]
+  strcat(work_dir, "/");
+  ^
+main.c:306:19: error: ‘CODE_DATA’ undeclared (first use in this function)
+  strcat(work_dir, CODE_DATA);
+                   ^
+main.c:310:22: error: ‘RWXRWXRWX’ undeclared (first use in this function)
+  if (mkdir(work_dir, RWXRWXRWX) < 0) {
+                      ^
+main.c:311:7: error: ‘errno’ undeclared (first use in this function)
+   if (errno != EEXIST) {
+       ^
+main.c:311:16: error: ‘EEXIST’ undeclared (first use in this function)
+   if (errno != EEXIST) {
+                ^
+main.c:312:14: error: ‘APP_LOG’ undeclared (first use in this function)
+    write_log(APP_LOG, 0, "mkdir error(in make_work_dir)");
+              ^
+main.c:313:4: warning: incompatible implicit declaration of built-in function ‘exit’ [enabled by default]
+    exit(-1);
+    ^
+main.c: In function ‘remove_file’:
+main.c:322:14: error: ‘APP_LOG’ undeclared (first use in this function)
+    write_log(APP_LOG, 1, "remove %s error(in remove_file)", fn);
+              ^
+main.c: In function ‘remove_files’:
+main.c:327:14: error: ‘DATA_IN’ undeclared (first use in this function)
+  remove_file(DATA_IN, 1);
+              ^
+main.c:328:14: error: ‘DATA_OUT’ undeclared (first use in this function)
+  remove_file(DATA_OUT, 1);
+              ^
+main.c:329:14: error: ‘RE_OUT’ undeclared (first use in this function)
+  remove_file(RE_OUT, 1);
+              ^
+main.c:330:14: error: ‘CE_OUT’ undeclared (first use in this function)
+  remove_file(CE_OUT, 1);
+              ^
+main.c:331:14: error: ‘USER_CODE’ undeclared (first use in this function)
+  remove_file(USER_CODE, 1);
+              ^
+main.c:332:14: error: ‘COMPILED_FILE’ undeclared (first use in this function)
+  remove_file(COMPILED_FILE, 1);
+              ^
+main.c: In function ‘create_file’:
+main.c:337:16: error: ‘RWRWRW’ undeclared (first use in this function)
+  if (creat(fn, RWRWRW) < 0) {
+                ^
+main.c:338:13: error: ‘APP_LOG’ undeclared (first use in this function)
+   write_log(APP_LOG, 1, "init create files error");
+             ^
+main.c: In function ‘init_create_files’:
+main.c:343:14: error: ‘INT_RE_OUT’ undeclared (first use in this function)
+  create_file(INT_RE_OUT);
+              ^
+main.c:344:14: error: ‘LOG_OUT’ undeclared (first use in this function)
+  create_file(LOG_OUT);
+              ^
+main.c: In function ‘init_remove_files’:
+main.c:348:14: error: ‘DATA_IN’ undeclared (first use in this function)
+  remove_file(DATA_IN, 0);
+              ^
+main.c:349:14: error: ‘DATA_OUT’ undeclared (first use in this function)
+  remove_file(DATA_OUT, 0);
+              ^
+main.c:350:14: error: ‘RE_OUT’ undeclared (first use in this function)
+  remove_file(RE_OUT, 0);
+              ^
+main.c:351:14: error: ‘CE_OUT’ undeclared (first use in this function)
+  remove_file(CE_OUT, 0);
+              ^
+main.c:352:14: error: ‘USER_CODE’ undeclared (first use in this function)
+  remove_file(USER_CODE, 0);
+              ^
+main.c:353:14: error: ‘COMPILED_FILE’ undeclared (first use in this function)
+  remove_file(COMPILED_FILE, 0);
+              ^
+main.c: In function ‘main’:
+main.c:359:2: error: unknown type name ‘pid_t’
+  pid_t pid;
+  ^
+main.c:362:16: error: ‘WORK_DIR_LEN’ undeclared (first use in this function)
+  char work_dir[WORK_DIR_LEN];
+                ^
+main.c:365:13: error: ‘APP_LOG’ undeclared (first use in this function)
+   write_log(APP_LOG, 0, "usgae: ./main username code_id");
+             ^
+main.c:366:3: warning: incompatible implicit declaration of built-in function ‘exit’ [enabled by default]
+   exit(-1);
+   ^
+main.c:371:3: warning: incompatible implicit declaration of built-in function ‘exit’ [enabled by default]
+   exit(-1);
+   ^
+main.c:374:13: error: ‘update_ret_to_db’ undeclared (first use in this function)
+  if (atexit(update_ret_to_db) != 0) {
+             ^
+main.c:376:3: warning: incompatible implicit declaration of built-in function ‘exit’ [enabled by default]
+   exit(-1);
+   ^
+main.c:379:2: warning: incompatible implicit declaration of built-in function ‘strcpy’ [enabled by default]
+  strcpy(user_name, argv[1]);
+  ^
+main.c:384:3: warning: incompatible implicit declaration of built-in function ‘exit’ [enabled by default]
+   exit(-1);
+   ^
+main.c:397:16: error: ‘USER_CODE’ undeclared (first use in this function)
+  ret = compile(USER_CODE);
+                ^
+main.c:398:13: error: ‘COMPILED_OK’ undeclared (first use in this function)
+  if (ret != COMPILED_OK) {
+             ^
+main.c:399:13: error: ‘LOG’ undeclared (first use in this function)
+   write_log(LOG, 0, "compile error, see the ce.out");
+             ^
+main.c:400:3: warning: incompatible implicit declaration of built-in function ‘exit’ [enabled by default]
+   exit(-1);
+   ^
+main.c:407:13: error: ‘INT_RE’ undeclared (first use in this function)
+   write_log(INT_RE, 1, "fork error (in main)");
+             ^
+main.c:408:3: warning: incompatible implicit declaration of built-in function ‘exit’ [enabled by default]
+   exit(-1);
+   ^
+main.c:414:15: error: ‘CODE_TL’ undeclared (first use in this function)
+   if (flag == CODE_TL) {
+               ^
+main.c:415:14: error: ‘RE’ undeclared (first use in this function)
+    write_log(RE, 0, "time exceed");
+              ^
+main.c:416:22: error: ‘CODE_ML’ undeclared (first use in this function)
+   } else if (flag == CODE_ML) {
+                      ^
+main.c:418:22: error: ‘CODE_OL’ undeclared (first use in this function)
+   } else if (flag == CODE_OL) {
+                      ^
+main.c:420:22: error: ‘CODE_RE’ undeclared (first use in this function)
+   } else if (flag == CODE_RE) {
+                      ^
+make: *** [main] Error 1
