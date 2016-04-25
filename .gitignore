@@ -4,3 +4,4 @@ web/static/src-min-noconflict/*
 web/static/examples/
 *pyc
 *swp
+code_data/*

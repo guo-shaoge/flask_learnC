@@ -1,0 +1,18 @@
+remove data.out error(in remove_file)
+
+No such file or directory
+remove rt_err.out error(in remove_file)
+
+No such file or directory
+remove compiled_file error(in remove_file)
+
+No such file or directory
+remove data.out error(in remove_file)
+
+No such file or directory
+remove rt_err.out error(in remove_file)
+
+No such file or directory
+remove compiled_file error(in remove_file)
+
+No such file or directory
