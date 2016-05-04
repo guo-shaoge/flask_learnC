@@ -1,121 +1,339 @@
 {% extends "layout.html" %}
 
 {% block page_content %}
-
-<h2 class="sub-header">codepad</h2>
+  <div class="col-xs-8">
 	<pre id="editor" id="code_text">{{code_text}}
 	</pre>
+  </div><!--col-xs-8-->
 
-	<div class="checkbox tooltip-show" data-toggle="tooltip" title="输入code_name，否则无法保存" style="width:90px" id="save_code">
-	  <label><small>
-		<input type="checkbox" value="remember-me"> Save Code</small>
-	  </label>
-	</div>
-	<div class="tooltip-show" data-toggle="tooltip" title="Ctrl+'">
-	<button onclick="submit()" type="submit" id="submit_code" class="btn btn-primary pull-left" >Submit</button>
-	</div>
+  <div class="col-xs-4">
+	  <div class="box box-primary" id="run_code_result_box" >
+		<div class="box-header with-border">
+			<h3 class="box-title">Result</h3>
+			<div class="box-tools pull-right">
+				<!-- Buttons, labels, and many other things can be placed here! -->
+				<!-- Here is a label for example -->
+				<div class="box-tools pull-right">
+					<button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
+					<button class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove"><i class="fa fa-times"></i></button>
+				</div><!-- /.box-tools -->
+			</div><!-- /.box-tools -->
+		</div><!-- /.box-header -->
+		<div class="box-body">
+			<pre class="pre-scrollable prettyprint" id="run_code_result" style="white-space:normal">
+			</pre>
+		</div><!-- /.box-body -->
+	</div><!-- /.box -->
 
-	<div class="col-xs-4" style="margin-up:20px"> 
-		<input class="form-control" placeholder="Code Name" id="code_name">
-	</div>
-	<div class="col-xs-4" style="margin-up:20px"> 
-		<input class="form-control" placeholder="Code Info" id="code_info">
-	</div>
+	<div class="box box-primary" id="debug_code_result_box">
+		<div class="box-header with-border">
+			<h3 class="box-title">Debug Result</h3>
+			<div class="box-tools pull-right">
+				<!-- Buttons, labels, and many other things can be placed here! -->
+				<!-- Here is a label for example -->
+				<div class="box-tools pull-right">
+					<button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
+					<button class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove"><i class="fa fa-times"></i></button>
+				</div><!-- /.box-tools -->
+			</div><!-- /.box-tools -->
+		</div><!-- /.box-header -->
+		<div class="box-body"> 
+		  <input id="arg_gdb" type="text" class="form-control" placeholder="input arguments">
+		  <br>
+		  <div class="btn-group" id="debug_code_btn">
+			  <button disabled="disabled" onclick="next_gdb()" data-toggle="tooltip" title="next" type="button" class="btn btn-default" id="next_gdb"><small>N</small></button>
+			  <button disabled="disabled" onclick="continue_gdb()"data-toggle="tooltip" title="continue" type="button" class="btn btn-default"><small>C</small></button>
+			  <button disabled="disabled" onclick="step_in_gdb()"data-toggle="tooltip" title="stepin" type="button" class="btn btn-default"><small>S</small></button>
+			  <button disabled="disabled" onclick="stop_gdb()"data-toggle="tooltip" title="stop" type="button" class="btn btn-default"><small>T</small></button>
+			  <button disabled="disabled" onclick="backtrace_gdb()"data-toggle="tooltip" title="backtrace" type="button" class="btn btn-default"><small>B</small><small>T</small></button>
+			  <button disabled="disabled" onclick="print_var_gdb()"data-toggle="tooltip" title="print_variable" type="button" class="btn btn-default"><small>P</small></button>
+		  </div>
+		  <div class="btn-group" id="debug_code_btn">
+			  <button onclick="clean_gdb_output()" data-toggle="tooltip" title="clean_output" type="button" class="btn btn-default"><small>C</small></button>
+		  </div>
+		  <br>
+		  <br>
+		  <pre class="pre-scrollable prettyprint" id="debug_code_result" style="white-space:normal">
+			</pre>
+		</div><!-- /.box-body -->
+	</div><!-- /.box -->
+</div><!--col-xs-4-->
+<div id="save_code_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" 
+					data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<h4 class="modal-title" id="myModalLabel">
+					Save Your Code
+				</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-horizontal" role="form">
+					<div class="form-group">
+						<label for="code_name" class="col-sm-2 control-label">Name</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="code_name" 
+							placeholder="Please input your code name">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="code_info" class="col-sm-2 control-label">Code Info</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="code_info" 
+							placeholder="Please input some descriptive text">
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" 
+					data-dismiss="modal">close
+				</button>
+				<button onclick="save_code()" id="save_code_button" type="button" class="btn btn-primary disabled" >
+					save
+				</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+{% endblock %}
+{% block page_script %}
+{{ super() }}
+<!-- learn js -->
+<script>
+function run_code() {
+	//$(".control-sidebar").addClass("control-sidebar-open");
+	//$("#open-run-code-tab").trigger("click");
+	//var white_pad_height = $(window).height()-400;
+	//$(".white-pad").css("height", white_pad_height);
+	$("#run_code_result_box").show();
+	var ajax_code_name = "";
+	var ajax_code_info = "";
+	var ajax_code_text = editor.getValue();
+	var ajax_data_input = document.getElementById("data_input");
+	if (ajax_data_input == null) ajax_data_inpu = "";
+	else ajax_data_input = ajax_data_input.value;
+	$.post(
+			"/run_code/new",
+			{ code_text: ajax_code_text,
+			data_input: ajax_data_input,
+			code_name: ajax_code_name,
+			code_info: ajax_code_info
+			}, 
+			function(result, status) {
+			var ret = result['ok_result'];
+			ret += '<br>' + result['re_result'];
+			ret += '<br>' + result['ce_result'];
+			$("#run_code_result").html(ret); 
+			});
+	return false;
+}
 
-<div style="padding-bottom:60px"></div>
+function save_code() {
+	var ajax_code_name = $("#code_name").val();
+	var ajax_code_info = $("#code_info").val();
+	var ajax_code_text = editor.getValue();
+	$.post(
+			"/run_code/new",
+			{ code_text: ajax_code_text,
+			data_input: "",
+code_name: ajax_code_name,
+code_info: ajax_code_info
+}, 
+function(result, status) {
+	$("#save_code_modal").modal('hide');
+});
+return false;
+}
+function debug_init() {
+	$("#debug_code_result_box").show();
+	$("#debug_code_result").html("");
+	$("#debug_code_btn").children().removeAttr("disabled");
+}
+function breakpoint_gdb() {
+	var cmd = $("#cmd_gdb").val();
+	var arg = $("#arg_gdb").val();
+	alert(cmd);
+	alert(arg);
+	$.post("/debug",
+			{cmd: cmd,
+				arg: arg
+			},
+			function(result, status) {
+			alert("in return");
+			$("#debug_code_result").append(result['debug']);
+			});
+	return false;
+}
 
-<div class="panel panel-default"> 
-  <div class="panel-heading">
-  	<h5>Run Code Result: <span id="waiting" style="margin-top:4px;margin-left:9px">waiting...</span></h5>
-  </div><!--panel-heading-->
-  <div class="panel-body">
-  	<div class="col-lg-12">
-	  <h5>Your input</h5>
-	  <!--<pre class="ng-binding"></pre>-->
-	  <input class="form-control" placeholder="Your input" id="data_input">
-	</div><!--col-lg-12-->
-
-	<div class="col-lg-12">
-	  <h5>Your stdout</h5>
-	  <!--<input class="form-control" placeholder="stdout" name="data_output">-->
-	  <pre id="data_output"></pre>
-	</div>
-
-	<div class="col-lg-12">
-	  <h5>Runtime Error<h5>
-	  <pre id="runtime_err"></pre>
-	</div>
-
-	<div class="col-lg-12">
-	  <h5>Compile Error<h5>
-	  <pre id="compile_err"></pre>
-	</div>
-
-  </div><!--panel-body-->
-</div><!--panel-->
-
-{% block script %}
-	{{ super() }}
-	<!--ace-->
-	<script>
-	$(document).ready(function() {
-		$("#waiting").hide();
-		$("#code_name").hide();
-		$("#code_info").hide();
-		$("#save_code").change(function() {
-			$("#code_name").show("slow");
-			$("#code_info").show("slow");
+function start_debug() {
+	//$(".control-sidebar").addClass("control-sidebar-open");
+	//$("#open-debug-code-tab").trigger("click");
+	//var white_pad_height = $(window).height()-400;
+	//$(".white-pad").css("height", white_pad_height);
+	debug_init();
+	var ajax_code_text = editor.getValue();
+	$.post("/debug",
+			{cmd: "start",
+				code_text: ajax_code_text
+			},
+			function(result, status) {
+				$("#debug_code_result").append(result['debug']);
+			});
+	return false;
+}
+function next_gdb() {
+	$.post("/debug",
+			{cmd: "next",
+			},
+			function(result, status) {
+			$("#debug_code_result").append(result['debug']);
+			});
+	return false;
+}
+function continue_gdb() {
+	$.post("/debug",
+			{cmd: "continue",
+			},
+			function(result, status) {
+			$("#debug_code_result").append('<br>'+result['debug']);
+			});
+	return false;
+}
+function step_in_gdb() {
+	$.post("/debug",
+			{cmd: "step_in",
+			},
+			function(result, status) {
+			$("#debug_code_result").append('<br>'+result['debug']);
+			});
+	return false;
+}
+function list_bp_gdb() {
+	$.post("/debug",
+			{cmd: "list_bp",
+			},
+			function(result, status) {
+			$("#debug_code_result").append('<br>'+result['debug']);
+			});
+	return false;
+}
+function backtrace_gdb() {
+	$.post("/debug",
+			{cmd: "backtrace",
+			},
+			function(result, status) {
+			$("#debug_code_result").append('<br>'+result['debug']);
+			});
+	return false;
+}
+function update_breakpoints(glo_bps) {
+	var args = [];
+	for ( i in glo_bps)
+		args.push(i);
+	$.post("/debug",
+			{cmd: "update_breakpoints",
+			arg: String(args)
+			},
+			function(result, status) {
+			$("#debug_code_result").append('<br>'+result['debug']);
+			});
+	return false;
+}
+function print_var_gdb() {
+	var v = $("#arg_gdb").val();
+	if (v == '') {
+		alert("please input variable name");
+		return ;
+	}
+	$.post("/debug",
+			{cmd: "print_var",
+			arg: v
+			},
+			function(result, status) {
+			$("#debug_code_result").append('<br>'+result['debug']);
+			});
+	return false;
+}
+function clean_gdb_output() {
+	$("#debug_code_result").html("");
+}
+function stop_gdb() {
+	$("#debug_code_btn").children().attr("disabled", "disabled");
+	$("#debug_code_result").html("");
+	$.post("/debug",
+			{cmd: "stop",
+			},
+			function(result, status) {
+			$("#debug_code_result").append('<br>'+result['debug']);
+			});
+	return false;
+}
+$(document).ready(function() {
+	var code_name_input = $("#code_name");
+	code_name_input.on('input', function() {
+		if (code_name_input.val() != "") {
+			$("#save_code_button").removeClass("disabled");
+			} else {
+			$("#save_code_button").addClass("disabled");
+			}
 		});
-	});
-	var editor = ace.edit("editor");
-	editor.setTheme("ace/theme/tomorrow");
+	// editor is a global var
+	editor = ace.edit("editor");
+	editor.setTheme("ace/theme/dawn");
 	editor.session.setMode("ace/mode/c_cpp");
 	editor.setAutoScrollEditorIntoView(true);
-	editor.setOption("minLines", 20);
-	editor.gotoLine(3);
+	//editor.setOptions({maxLines: 20});
+	var winHeight = $(window).height();
+	var navHeight = $("#navbar").height();
+	$("#editor").height(winHeight-navHeight-150);
+	editor.gotoLine(3,0);
 
 	editor.commands.addCommand({
 		name: 'submit',
 		bindKey: {win:"Ctrl-'", mac: "Command-'"},
 		exec: function(editor) {
-			submit();
+		submit();
 		},
 		readOnly: true
-	});
-    editor.commands.addCommand({
-        name: "showKeyboardShortcuts",
-        bindKey: {win: "Ctrl-Alt-h", mac: "Command-Alt-h"},
-        exec: function(editor) {
-            ace.config.loadModule("ace/ext/keybinding_menu", function(module) {
-                module.init(editor);
-                editor.showKeyboardShortcuts()
-            })
-        }
-    });
-<!--    editor.execCommand("showKeyboardShortcuts");-->
-	</script>
-	<script>
-		function submit() {
-			var ajax_code_name = document.getElementById("code_name").value;
-			var ajax_code_info = document.getElementById("code_info").value;
-			var ajax_code_text = editor.getValue();
-			var ajax_data_input = document.getElementById("data_input").value;
-			$("#waiting").show();
-			$.post(
-				"/run_code/new",
-				{ code_text: ajax_code_text,
-				  data_input: ajax_data_input,
-				  code_name: ajax_code_name,
-				  code_info: ajax_code_info
-				}, 
-				function(result, status) {
-					$("#waiting").hide();
-					document.getElementById("data_output").innerHTML = result['ok_result'];
-					document.getElementById("runtime_err").innerHTML = result['re_result'];
-					document.getElementById("compile_err").innerHTML = result['ce_result'];
-				});
-			return false;
+		});
+	editor.commands.addCommand({
+		name: "showKeyboardShortcuts",
+		bindKey: {win: "Ctrl-Alt-h", mac: "Command-Alt-h"},
+		exec: function(editor) {
+		ace.config.loadModule("ace/ext/keybinding_menu", function(module) {
+			module.init(editor);
+			editor.showKeyboardShortcuts()
+			})
 		}
-	</script>
-{% endblock %}
+		});
+	editor.on("guttermousedown", function(e){ 
+			if ($("#next_gdb").attr("disabled")) {
+				alert("start debug before setup breakpoints");
+				return;
+				}
+			var target = e.domEvent.target; 
+			if (target.className.indexOf("ace_gutter-cell") == -1) 
+			return; 
+			if (!editor.isFocused()) 
+			return; 
+			if (e.clientX > 25 + target.getBoundingClientRect().left) 
+			return; 
+
+			var row = e.getDocumentPosition().row 
+			if (row in e.editor.session.getBreakpoints()) {
+				e.editor.session.clearBreakpoint(row);
+				} else {
+				e.editor.session.setBreakpoint(row);
+				}
+			glo_bps = e.editor.session.getBreakpoints();
+			update_breakpoints(glo_bps);
+			e.stop()
+			})
+	<!--editor.execCommand("showKeyboardShortcuts");-->
+});
+
+</script>
 {% endblock %}

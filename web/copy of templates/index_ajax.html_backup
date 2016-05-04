@@ -1,0 +1,115 @@
+{% extends "layout.html" %}
+
+{% block page_content %}
+
+<h2 class="sub-header">codepad</h2>
+	<pre id="editor" id="code_text">{{code_text}}
+	</pre>
+
+	<div class="checkbox tooltip-show" data-toggle="tooltip"  title="输入code_name，否则无法保存" style="width:90px" id="save_code">
+	  <label><small>
+		<input type="checkbox" value="remember-me"> Save Code</small>
+	  </label>
+	</div>
+	<div class="tooltip-show" data-toggle="tooltip" title="Ctrl+'">
+	<button onclick="submit()" type="submit" id="submit_code" class="btn btn-primary pull-left" >Submit</button>
+	</div>
+<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#demo">toggle</button>
+<div id="demo" class="collapse">
+	test!!
+</div>
+
+	<div class="col-xs-4" style="margin-up:20px"> 
+		<input class="form-control " placeholder="Code Name" id="code_name">
+	</div>
+	<div class="col-xs-4" style="margin-up:20px"> 
+		<input class="form-control " placeholder="Code Info" id="code_info">
+	</div>
+
+<div style="padding-bottom:60px"></div>
+
+<div class="panel panel-default"> 
+  <div class="panel-heading">
+  	<h5>Run Code Result: <span id="waiting" style="margin-top:4px;margin-left:9px">waiting...</span></h5>
+  </div><!--panel-heading-->
+  <div class="panel-body">
+  	<div class="col-lg-12">
+	  <h5>Your input</h5>
+	  <!--<pre class="ng-binding"></pre>-->
+	  <input class="form-control" placeholder="Your input" id="data_input">
+	</div><!--col-lg-12-->
+
+	<div class="col-lg-12">
+	  <h5>Your stdout</h5>
+	  <!--<input class="form-control" placeholder="stdout" name="data_output">-->
+	  <pre id="data_output"></pre>
+	</div>
+
+	<div class="col-lg-12">
+	  <h5>Runtime Error<h5>
+	  <pre id="runtime_err"></pre>
+	</div>
+
+	<div class="col-lg-12">
+	  <h5>Compile Error<h5>
+	  <pre id="compile_err"></pre>
+	</div>
+
+  </div><!--panel-body-->
+</div><!--panel-->
+
+<script src="../static/jquery.min.js"></script>
+<script>
+$(document).ready(function() {
+	$("#waiting").hide();
+
+	var editor = ace.edit("editor");
+	editor.setTheme("ace/theme/tomorrow");
+	editor.session.setMode("ace/mode/c_cpp");
+	editor.setAutoScrollEditorIntoView(true);
+	editor.setOption("minLines", 20);
+	editor.gotoLine(3);
+
+	editor.commands.addCommand({
+		name: 'submit',
+		bindKey: {win:"Ctrl-'", mac: "Command-'"},
+		exec: function(editor) {
+		submit();
+		},
+		readOnly: true
+		});
+				editor.commands.addCommand({
+		name: "showKeyboardShortcuts",
+		bindKey: {win: "Ctrl-Alt-h", mac: "Command-Alt-h"},
+		exec: function(editor) {
+		ace.config.loadModule("ace/ext/keybinding_menu", function(module) {
+			module.init(editor);
+			editor.showKeyboardShortcuts()
+			})
+		}
+		});
+		<!--    editor.execCommand("showKeyboardShortcuts");-->
+});
+function submit() {
+	var ajax_code_name = document.getElementById("code_name").value;
+	var ajax_code_info = document.getElementById("code_info").value;
+	var ajax_code_text = editor.getValue();
+	var ajax_data_input = document.getElementById("data_input").value;
+	$("#waiting").show();
+	$.post(
+			"/run_code/new",
+			{ code_text: ajax_code_text,
+data_input: ajax_data_input,
+code_name: ajax_code_name,
+code_info: ajax_code_info
+}, 
+function(result, status) {
+$("#waiting").hide();
+document.getElementById("data_output").innerHTML = result['ok_result'];
+document.getElementById("runtime_err").innerHTML = result['re_result'];
+document.getElementById("compile_err").innerHTML = result['ce_result'];
+});
+return false;
+}
+</script>
+{% endblock %}

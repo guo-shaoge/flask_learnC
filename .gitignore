@@ -1,7 +1,4 @@
-web/static/bootstrap/*
-web/static/demo/*
-web/static/src-min-noconflict/*
-web/static/examples/
+web/static/*
 *pyc
 *swp
 code_data/*
