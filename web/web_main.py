@@ -9,6 +9,7 @@ import subprocess
 from werkzeug.security import check_password_hash, generate_password_hash
 import gdbmi
 import os
+import socket
 
 #config
 DATABASE_PATH='/home/shaughn/707/bishe/web_main.db'
@@ -16,6 +17,7 @@ DATABASE_SCRIPT='web_main.sql'
 SECRET_KEY='test secret key'
 MAIN_PATH='/home/shaughn/707/bishe/main'
 CODE_PATH='/home/shaughn/707/bishe/code_data'
+MOBWRITE_DAEMON_PORT=3017
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -177,7 +179,7 @@ def debug():
         ret = temp_compile_code(request.form['code_text'])
         if ret != 0:
             return jsonify(debug='compile failed, maybe you should run the code first \
-                    to check the err message<br>')
+                    to check the error message<br>')
         p = gdbmi.Session(os.path.join(session['code_path'], 'a.out')).start()
         if current_app.gdb.has_key(session['user_id']): 
             current_app.gdb[session['user_id']].process.kill()
@@ -192,7 +194,12 @@ def debug():
         token = cur_gdb.send('-exec-run')
         while not cur_gdb.wait_for(token):
             pass
-        return jsonify(debug=cur_gdb.ret_str.strip()+'<br>')
+        debug_ret = cur_gdb.ret_str.strip()
+        if cur_gdb.line_no != "":
+            tempstr = 'line(%s): ' % cur_gdb.func.strip()
+            debug_ret = tempstr+cur_gdb.line_no.strip() \
+                    +' '+debug_ret
+        return jsonify(debug=debug_ret+'<br>')
 
     cur_gdb = current_app.gdb[session['user_id']]
     if cmd == 'update_breakpoints':
@@ -244,8 +251,12 @@ def debug():
         cur_gdb.process.kill()
         sys.stderr.write(cur_gdb.process.process.poll())
     sys.stderr.write(cur_gdb.ret_str.strip())
-    return jsonify(debug=cur_gdb.ret_str.strip()+'<br>')
-
+    debug_ret = cur_gdb.ret_str.strip()
+    if cur_gdb.line_no != "":
+        tempstr = 'line(%s): ' % cur_gdb.func.strip()
+        debug_ret = tempstr+cur_gdb.line_no.strip() \
+                +' '+debug_ret
+    return jsonify(debug=debug_ret+'<br>')
 
 @app.route('/run_code/<code_id>', methods=['GET', 'POST'])
 def run_code(code_id):
@@ -312,5 +323,32 @@ int main() {
         return render_template('index_ajax.html', code_text=code_text, username=session['username'])
         #return render_template('index_form.html')
 
+@app.route('/gateway', methods=['POST'])
+def gateway():
+    outStr = '\n'
+    if request.form.has_key('q'):
+        outStr = request.form['q']
+    elif request.form.has_key('p'):
+        outStr = request.form['p']
+
+    inStr = ''
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        s.connect(('localhost', MOBWRITE_DAEMON_PORT))
+    except socket.error, msg:
+        s = None
+    if not s:
+        inStr = '\n'
+    else:
+        s.settimeout(10.0)
+        s.send(outStr)
+    while 1:
+        line = s.recv(1024)
+        if not line:
+            break
+        inStr += line
+    s.close()
+    
+    return inStr+'\n'
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=8080, debug=True)

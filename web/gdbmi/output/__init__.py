@@ -28,8 +28,7 @@ class _Output(object):
                 raise ValueError(src)
 
     def __repr__(self):
-        return "<< GDB/MI:%s [%s]: %s>>" % (self.__class__.__name__,
-                                            self.what, self.args)
+        return "[%s]: %s>>" % (self.what, self.args)
 
     @classmethod
     def parse_tuple(self, src):

@@ -1,8 +1,9 @@
 {% extends "layout.html" %}
 
 {% block page_content %}
-  <div class="col-xs-8">
-	<pre id="editor" id="code_text">{{code_text}}
+<textarea id="testarea" style="width:100px;height:100px"></textarea>
+  <div class="col-xs-8" >
+	<pre id="editor" >{{code_text}}
 	</pre>
   </div><!--col-xs-8-->
 
@@ -20,6 +21,8 @@
 			</div><!-- /.box-tools -->
 		</div><!-- /.box-header -->
 		<div class="box-body">
+			<textarea id="data_input" style="width:100%" placeholder="input data"></textarea>
+			<br>
 			<pre class="pre-scrollable prettyprint" id="run_code_result" style="white-space:normal">
 			</pre>
 		</div><!-- /.box-body -->
@@ -102,6 +105,7 @@
 {% block page_script %}
 {{ super() }}
 <!-- learn js -->
+<script src="../static/compressed_form.js"></script>
 <script>
 function run_code() {
 	//$(".control-sidebar").addClass("control-sidebar-open");
@@ -272,6 +276,8 @@ function stop_gdb() {
 	return false;
 }
 $(document).ready(function() {
+        $("#testarea").hide();
+        mobwrite.share('testarea');
 	var code_name_input = $("#code_name");
 	code_name_input.on('input', function() {
 		if (code_name_input.val() != "") {
@@ -309,6 +315,10 @@ $(document).ready(function() {
 			})
 		}
 		});
+	editor.on("change", function(e){ 
+           var text = editor.getValue();
+           $("#testarea").val(text);
+			})
 	editor.on("guttermousedown", function(e){ 
 			if ($("#next_gdb").attr("disabled")) {
 				alert("start debug before setup breakpoints");

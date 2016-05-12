@@ -13,6 +13,11 @@ class Session(object):
         """
         >>> p = Session("test/hello")
         """
+        # my change
+        self.ret_str = ""
+        self.line_no = ""
+        self.func = ""
+
         self.debuggee = debuggee
 
         p = subprocess.Popen(
@@ -30,8 +35,6 @@ class Session(object):
             )
         fl = fcntl.fcntl(p.stdout, fcntl.F_GETFL)
         fcntl.fcntl(p.stdout, fcntl.F_SETFL, fl | os.O_NONBLOCK)
-
-        self.ret_str = ""
 
         self.process = p
         self.buf = ""
@@ -86,7 +89,7 @@ class Session(object):
         p = self.process
         p.stdin.write(token + cmd + "\n")
         p.stdin.flush()
-        #print(["SENT[" + token +"]:", cmd])
+        logging.warn(["SENT[" + token +"]:", cmd])
         self.commands[token] = {'cmd': cmd,
                                 'handler': handler,
                                 }
@@ -108,13 +111,11 @@ class Session(object):
         if not line:
             return
 
-        #print 'debug!!!!: ' + line
         if line.startswith('(gdb)'):
             # terminator
             yield (token, gdbmi.output.Terminator())
             return
-        #
-        #logging.error(line)
+        logging.error(line)
         while line[0] in "0123456789":
             token = token + line[0]
             line = line[1:]
@@ -123,7 +124,6 @@ class Session(object):
                 yield (token, klass(line))
                 return
 
-        #print 'debug!!!!: ' + line
         logging.warn([line])
         #raise ValueError((token, line))
 
@@ -221,9 +221,16 @@ class Session(object):
             }.get(obj.TOKEN, None)
 
         if not (handler and handler(token, obj)):
-            if token != '':
-                self.ret_str = "%s" % obj
-                #print([token, obj])
+            #if obj.args.has_key('frame'):
+            #    print 'debug!!!: ',
+            #    print obj.args.get('frame').get('line')
+            self.ret_str = str(obj)
+            if obj.args.has_key('frame'):
+                self.line_no = obj.args.get('frame').get('line')
+                self.func = obj.args.get('frame').get('func')
+            for k, v in obj.args.items():
+                print (k, v)
+            #logging.warn(["IGN:", token, obj])
 
     def read(self, blocking = 0):
         for src in self._read(blocking):            
