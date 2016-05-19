@@ -281,6 +281,7 @@ int watch_solution(pid_t pid, int *flag) {
 				break;
 			}
 		}
+
 		if (ptraceflag == 0 && WIFSIGNALED(status)) {
 			signo = WTERMSIG(status);
 			//psignal(signo, "in signaled");
@@ -307,11 +308,15 @@ int watch_solution(pid_t pid, int *flag) {
 			if (call_counter[orig_eax] > syscall_limit[orig_eax]) {
 				*flag = CODE_RE;
 				write_log(LOG, 0, "process %d is calling %s which is not allowed", pid, syscall_list[orig_eax]);
+                // debug
+                //fprintf(stderr, "calling %s(%d), which is not allowed\n", syscall_list[orig_eax], call_counter[orig_eax]);
 				write_log(LOG, 0, "process %d is calling %s", pid, syscall_list[orig_eax]);
 				ptrace(PTRACE_KILL, pid, NULL, NULL);
 				break;
 			} else {
 				//write_log(LOG, 0, "process %d is calling %s\n", pid, syscall_list[orig_eax]);
+                // debug
+                //fprintf(stderr, "calling %s(%d)\n", syscall_list[orig_eax], call_counter[orig_eax]);
 			}
 		}
 		insyscall = 1-insyscall;

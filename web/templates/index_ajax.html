@@ -2,8 +2,8 @@
 
 {% block page_content %}
 <textarea id="testarea" style="width:100px;height:100px"></textarea>
-  <div class="col-xs-8" >
-	<pre id="editor" >{{code_text}}
+  <div class="col-xs-8">
+	<pre id="editor" id="code_text">{{code_text}}
 	</pre>
   </div><!--col-xs-8-->
 
@@ -98,8 +98,46 @@
 				<button onclick="save_code()" id="save_code_button" type="button" class="btn btn-primary disabled" >
 					save
 				</button>
+            </div>
 			</div>
 		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+
+<div id="join_room_modal" class="modal fade" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" 
+					data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<h4 class="modal-title" id="myModalLabel1">
+                    Join In A Group
+				</h4>
+			</div>
+            <div id="for_toggle_room">
+			<div class="modal-body">
+				<div class="form-horizontal" role="form">
+					<div class="form-group">
+						<label for="room_name" class="col-sm-2 control-label">Name</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="room_name"
+							placeholder="Please input group name">
+						</div>
+					</div>
+				</div>
+			</div>
+        </div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" 
+					data-dismiss="modal">close
+				</button>
+				<button onclick="toggle_room()" id="join_group_button" type="button" class="btn btn-primary disabled" >
+					join
+				</button>
+			</div>
+		</div><!-- /.modal-content -->
+    </div><!--/.modal-dialog-->
 	</div><!-- /.modal -->
 {% endblock %}
 {% block page_script %}
@@ -133,6 +171,38 @@ function run_code() {
 			$("#run_code_result").html(ret); 
 			});
 	return false;
+}
+
+function toggle_room() {
+    var span_content = $("#share_code_span").html();
+    if (span_content == "Share Code") 
+        join_room();
+    else {
+        leave_room();
+    }
+    $("#join_room_modal").modal('hide');
+}
+
+function join_room() {
+    mobwrite.share('testarea');
+    var ajax_room_name = $("#room_name").val();
+    glo_room_name = ajax_room_name;
+    if (ajax_room_name == "")
+        return;
+    mobwrite.idPrefix = ajax_room_name;
+    //glo_socket.emit('join room', {'room': ajax_room_name});
+    $("#share_code_span").html("Stop Sharing");
+    $("#join_group_button").html("leave");
+    $.notify("Join in Group " + glo_room_name, "success");
+    return false;
+}
+
+function leave_room() {
+    mobwrite.unshare('testarea');
+    //glo_socket.emit('leave room', {'room': glo_room_name});
+    $("#share_code_span").html("Share Code");
+    $("#join_group_button").html("join");
+    return false;
 }
 
 function save_code() {
@@ -277,7 +347,6 @@ function stop_gdb() {
 }
 $(document).ready(function() {
         $("#testarea").hide();
-        mobwrite.share('testarea');
 	var code_name_input = $("#code_name");
 	code_name_input.on('input', function() {
 		if (code_name_input.val() != "") {
@@ -286,6 +355,14 @@ $(document).ready(function() {
 			$("#save_code_button").addClass("disabled");
 			}
 		});
+    var room_name_input = $("#room_name");
+    room_name_input.on('input', function() {
+        if (room_name_input.val() != "") {
+            $("#join_group_button").removeClass("disabled");
+            } else {
+            $("#join_group_button").addClass("disabled");
+            }
+        });
 	// editor is a global var
 	editor = ace.edit("editor");
 	editor.setTheme("ace/theme/dawn");
@@ -315,10 +392,6 @@ $(document).ready(function() {
 			})
 		}
 		});
-	editor.on("change", function(e){ 
-           var text = editor.getValue();
-           $("#testarea").val(text);
-			})
 	editor.on("guttermousedown", function(e){ 
 			if ($("#next_gdb").attr("disabled")) {
 				alert("start debug before setup breakpoints");
@@ -342,7 +415,16 @@ $(document).ready(function() {
 			update_breakpoints(glo_bps);
 			e.stop()
 			})
+	editor.on("change", function(e){ 
+           var text = editor.getValue();
+           $("#testarea").val(text);
+			})
 	<!--editor.execCommand("showKeyboardShortcuts");-->
+        $("#testarea").change(function() {
+                editor.setValue($("#testarea").val());
+                editor.clearSelection();
+                //editor.moveCursorTo($("#testarea").selectionStart);
+                });
 });
 
 </script>

@@ -239,7 +239,7 @@ def debug():
         while not cur_gdb.wait_for(token):
             pass
     if cmd == 'list_bp':
-        token = cur_gdb.send('-break-info')
+        token = cur_gdb.send('-break-list')
         while not cur_gdb.wait_for(token):
             pass
     if cmd == 'print_var':
@@ -350,5 +350,8 @@ def gateway():
     s.close()
     
     return inStr+'\n'
+
+    
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=8080, debug=True)
+    #socketio.run(app, host="0.0.0.0", port=8080, debug=True)

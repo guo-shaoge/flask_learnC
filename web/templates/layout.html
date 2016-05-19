@@ -155,8 +155,8 @@
 		  </a>
 		</li>
 		<li>
-		  <a href="#" id="sidebar_share_code">
-			  <i class="fa fa-share-alt-square"></i> <span>Share Code</span>
+		  <a href="#" data-toggle="modal" data-target="#join_room_modal" id="sidebar_share_code">
+			  <i class="fa fa-share-alt-square"></i> <span id="share_code_span">Share Code</span>
 		  </a>
 		</li>
     </section>
@@ -318,6 +318,8 @@
 <!--<script src="../static/adminlte/dist/js/pages/dashboard.js"></script>-->
 <!-- AdminLTE for demo purposes -->
 <script src="../static/adminlte/dist/js/demo.js"></script>
+<script src="../static/socket.io-client/socket.io.js"></script>
+<script src="../static/notify.min.js"></script>
 {% endblock %}
 
 </body>
