@@ -187,10 +187,6 @@ def debug():
             del current_app.gdb[session['user_id']]
         current_app.gdb[session['user_id']] = p
         cur_gdb = p
-        sys.stderr.write(str(cur_gdb.process.pid)+'\n')
-        #token = cur_gdb.send('-break-insert main')
-        #while not cur_gdb.wait_for(token):
-        #    pass
         token = cur_gdb.send('-exec-run')
         while not cur_gdb.wait_for(token):
             pass
@@ -225,7 +221,7 @@ def debug():
         while not cur_gdb.wait_for(token):
             pass
     if cmd == 'backtrace':
-        token = cur_gdb.send('-data-evaluate-expression main')
+        token = cur_gdb.send('-stack-list-frames')
         while not cur_gdb.wait_for(token):
             pass
     if cmd == 'add_bp':
@@ -250,7 +246,6 @@ def debug():
     if cmd == 'stop':
         cur_gdb.process.kill()
         sys.stderr.write(cur_gdb.process.process.poll())
-    sys.stderr.write(cur_gdb.ret_str.strip())
     debug_ret = cur_gdb.ret_str.strip()
     if cur_gdb.line_no != "":
         tempstr = 'line(%s): ' % cur_gdb.func.strip()
@@ -267,7 +262,6 @@ def run_code(code_id):
         if code_text != '':
             code_name = request.form['code_name']
             code_info = request.form['code_info']
-            #sys.stderr.write('debug!!!: '+code_name+ ' '+code_text+'\n')
             author_id = session['user_id']
             data_input = request.form['data_input']
             code_time = int(time.time())
@@ -283,11 +277,6 @@ def run_code(code_id):
             code_id = get_db().execute('select code_id from code where author_id=? and\
                 code_time=?', [author_id, code_time]).fetchone()[0]
             db = get_db()
-            #sys.stderr.write('\ncode_text is:')
-            #sys.stderr.write(code_text)
-            #sys.stderr.write('\ncode_name is:')
-            #sys.stderr.write(code_name)
-            #sys.stderr.write('\n')
 
             if code_name != '':
                 db.execute('insert into saved_code (code_id, author_id, code_name, saved_time, info)\
@@ -300,12 +289,6 @@ def run_code(code_id):
                 [code_id]).fetchone()
             db_ce_result = get_db().execute('select ce_result from code where code_id=?',\
                 [code_id]).fetchone()
-            #return 'ok_result: %s' % db_ok_result[0]
-            #return jsonify(ok_result='what?')
-            sys.stderr.write(code_text)
-            sys.stderr.write(db_ok_result[0])
-            sys.stderr.write(db_re_result[0])
-            sys.stderr.write('debug over!!')
             return jsonify(ok_result=db_ok_result[0], re_result=db_re_result[0], ce_result=db_ce_result[0])
         else:
             flash('please input your code!', category='warnning')
@@ -353,5 +336,5 @@ def gateway():
 
     
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=8080, debug=True)
+    app.run(host="0.0.0.0", port=8080, threaded=True)
     #socketio.run(app, host="0.0.0.0", port=8080, debug=True)

@@ -1,2 +1,6 @@
 compile ok, now start run
 
+process 3146 is calling SYS_clone which is not allowed
+
+process 3146 is calling SYS_clone
+

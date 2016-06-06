@@ -5,6 +5,7 @@ import fcntl
 import os
 import logging
 import select
+import sys
 
 import gdbmi
 
@@ -224,12 +225,22 @@ class Session(object):
             #if obj.args.has_key('frame'):
             #    print 'debug!!!: ',
             #    print obj.args.get('frame').get('line')
-            self.ret_str = str(obj)
             if obj.args.has_key('frame'):
                 self.line_no = obj.args.get('frame').get('line')
                 self.func = obj.args.get('frame').get('func')
-            for k, v in obj.args.items():
-                print (k, v)
+                if obj.args.get('frame').has_key('fullname'):
+                    obj.args.get('frame').pop('fullname')
+                if obj.args.get('frame').has_key('file'):
+                    obj.args.get('frame').pop('file')
+            if obj.args.has_key('stack'):
+                if obj.args.get('stack')[0].has_key('frame'):
+                    obj.args.get('stack')[0]['frame'].pop('file')
+                    obj.args.get('stack')[0]['frame'].pop('fullname')
+                    bt_ret = {}
+                    bt_ret.update(obj.args.get('stack')[0]['frame'])
+                    self.ret_str = str(bt_ret)
+                    return
+            self.ret_str = str(obj)
             #logging.warn(["IGN:", token, obj])
 
     def read(self, blocking = 0):
